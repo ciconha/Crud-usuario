@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Usuários</h1>
+    <a href="#" onclick="showAddUserForm()">Adicionar Usuário</a>
+    <ul id="userList"></ul>
+    <canvas id="userBarChart"></canvas>
+    <canvas id="userPieChart"></canvas>
+
+    <!-- Formulário para adicionar usuário -->
+    <div id="addUserForm" style="display: none;">
+        <h2>Adicionar Usuário</h2>
+        <form onsubmit="addUser(); return false;">
+            <label for="userId">ID:</label><br>
+            <input type="number" id="userId" required><br>
+            <label for="userName">Nome:</label><br>
+            <input type="text" id="userName" required><br>
+            <input type="submit" value="Salvar">
+        </form>
+        <a href="#" onclick="hideAddUserForm()">Voltar</a>
+    </div>
+
+    <script>
+        let users = [];
+
+        function showAddUserForm() {
+            document.getElementById('addUserForm').style.display = 'block';
+        }
+
+        function hideAddUserForm() {
+            document.getElementById('addUserForm').style.display = 'none';
+        }
+
+        function addUser() {
+            const userId = document.getElementById('userId').value;
+            const userName = document.getElementById('userName').value;
+            users.push({ id: parseInt(userId), name: userName });
+            updateUserList();
+            updateChart();
+            hideAddUserForm();
+        }
+
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                document.getElementById('userId').value = user.id;
+                document.getElementById('userName').value = user.name;
+                showAddUserForm();
+                users = users.filter(u => u.id !== userId);
+            }
+        }
+
+        function deleteUser(userId) {
+            users = users.filter(u => u.id !== userId);
+            updateUserList();
+            updateChart();
+        }
+
+        function updateUserList() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const userItem = document.createElement('li');
+                userItem.textContent = `${user.id} - ${user.name} `;
+                const editButton = document.createElement('a');
+                editButton.href = "#";
+                editButton.textContent = "Editar";
+                editButton.onclick = () => editUser(user.id);
+                userItem.appendChild(editButton);
+                userItem.appendChild(document.createTextNode(" "));
+                const deleteButton = document.createElement('a');
+                deleteButton.href = "#";
+                deleteButton.textContent = "Deletar";
+                deleteButton.onclick = () => deleteUser(user.id);
+                userItem.appendChild(deleteButton);
+                userList.appendChild(userItem);
+            });
+        }
+
+        function updateChart() {
+            const barCtx = document.getElementById('userBarChart').getContext('2d');
+            const pieCtx = document.getElementById('userPieChart').getContext('2d');
+
+            const labels = users.map(user => user.id.toString());
+            const data = users.map(user => user.id);
+
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Usuários',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Usuários',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+    </script>
+</body>
+</html>

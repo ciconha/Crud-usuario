@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuários</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/chart_config.js') }}"></script>
+</head>
+<body>
+    <h1>Usuários</h1>
+    <a href="{{ url_for('add_user') }}">Adicionar Usuário</a>
+    <ul>
+        {% for user in users %}
+        <li>
+            {{ user.id }} - {{ user.name }}
+            <a href="{{ url_for('update_user', user_id=user.id) }}">Editar</a>
+            <a href="{{ url_for('delete_user', user_id=user.id) }}">Deletar</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <canvas id="userChart"></canvas>
+    <script>
+        updateChart();
+    </script>
+</body>
+</html>
